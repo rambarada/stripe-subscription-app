@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Success</title>
+  </head>
+  <body>
+    <h1>Payment completed</h1>
+    <p>Your subscription is being confirmed by the webhook.</p>
+
+    <p>Status:</p>
+    <pre id="status">Checking...</pre>
+
+    <a href="/">Go back home</a>
+
+    <script>
+      const statusBox = document.getElementById("status");
+      const email = "ram@example.com";
+
+      async function checkStatus() {
+        const response = await fetch(
+          `/subscription-status?email=${encodeURIComponent(email)}`
+        );
+
+        const data = await response.json();
+        statusBox.textContent = JSON.stringify(data, null, 2);
+
+        if (data.subscriptionStatus !== "active") {
+          setTimeout(checkStatus, 2000);
+        }
+      }
+
+      checkStatus();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stripe Subscription Demo</title>
+  </head>
+  <body>
+    <h1>Stripe Subscription Demo</h1>
+
+    <p>Use this test user:</p>
+    <strong>ram@example.com</strong>
+
+    <br /><br />
+
+    <input id="email" value="ram@example.com" />
+    <button id="subscribeBtn">Subscribe</button>
+
+    <hr />
+
+    <button id="checkStatusBtn">Check Subscription Status</button>
+    <pre id="status"></pre>
+
+    <script>
+      const emailInput = document.getElementById("email");
+      const subscribeBtn = document.getElementById("subscribeBtn");
+      const checkStatusBtn = document.getElementById("checkStatusBtn");
+      const statusBox = document.getElementById("status");
+
+      subscribeBtn.addEventListener("click", async () => {
+        const email = emailInput.value;
+
+        const response = await fetch("/create-checkout-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert(data.error || "Something went wrong");
+        }
+      });
+
+      checkStatusBtn.addEventListener("click", async () => {
+        const email = emailInput.value;
+
+        const response = await fetch(
+          `/subscription-status?email=${encodeURIComponent(email)}`
+        );
+
+        const data = await response.json();
+        statusBox.textContent = JSON.stringify(data, null, 2);
+      });
+    </script>
+  </body>
+</html>
